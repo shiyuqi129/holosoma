@@ -2,9 +2,9 @@
 # Using heightmaps
 
 from environment import EnvironmentGrid
-from holosoma.holosoma.config_types.terrain import MeshType, TerrainTermCfg
-from holosoma.holosoma.simulator.shared.terrain import Terrain
-from holosoma.holosoma.utils.terrain_utils import SubTerrain, convert_heightfield_to_trimesh
+from holosoma.config_types.terrain import MeshType, TerrainTermCfg
+from holosoma.simulator.shared.terrain import Terrain
+from holosoma.utils.terrain_utils import SubTerrain, convert_heightfield_to_trimesh
 
 import numpy as np
 import trimesh
