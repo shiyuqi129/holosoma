@@ -3,6 +3,7 @@
 from typing import Tuple, List
 from enum import Enum
 import random
+import numpy as np
 
 class _MazeCell:
     def __init__(self, walls: Tuple[int, int, int, int] = (1,1,1,1)):
@@ -44,7 +45,7 @@ def _draw_rectangle(grid, start_row, end_row, start_col, end_col, fill = 1, DoIC
                 if DoICareAboutIndexError:
                     raise e
 
-def Prim(size: Tuple[int, int], cell_size: Tuple[int, int], wall_thickness: int = 1, r: float = 0):
+def Prim(size: Tuple[int, int], cell_size: Tuple[int, int], wall_thickness: int = 1, r: float = 0) -> np.ndarray:
     '''
     size: size of the grid
     cell_size: size of each cell
@@ -120,7 +121,7 @@ def Prim(size: Tuple[int, int], cell_size: Tuple[int, int], wall_thickness: int 
 
     _draw_rectangle(grid, n_row * (cell_size[0] + wall_thickness) - wall_thickness + 1, size[0], 0, size[1])
     _draw_rectangle(grid, 0 , size[0], n_col * (cell_size[1] + wall_thickness) - wall_thickness + 1, size[1])
-    return grid
+    return np.array(grid, dtype=int)
 
 class EnvironmentGridGenerationMethod(Enum):
     PRIM = Prim
@@ -133,4 +134,70 @@ class EnvironmentGrid:
         args, kwargs: arguments for method, check each method for reference
         '''
         self.size = size
-        self.grid = generation_method(size, *args, **kwargs)
+        self.grid: np.ndarray = generation_method(size, *args, **kwargs)
+
+class MazeEnvironmentGrid(EnvironmentGrid):
+    def __init__(self, size: Tuple[int, int], cell_size: Tuple[int, int], wall_thickness: int = 1, r: float = 0, generation_method = Prim, **kwargs):
+        super().__init__(size, generation_method, cell_size = cell_size, wall_thickness = wall_thickness, r = r, **kwargs)
+        self.cell_size = cell_size
+        self.wall_thickness = wall_thickness
+        self.r = r
+
+    @property
+    def n_row(self):
+        return (self.size[0] - 2 + self.wall_thickness) // (self.cell_size[0] + self.wall_thickness)
+    @property
+    def n_col(self):
+        return (self.size[1] - 2 + self.wall_thickness) // (self.cell_size[1] + self.wall_thickness)
+    
+    def cell2coord(self, row: int, col: int, point = 'center')-> Tuple[int, int]:
+        '''
+        Convert cell index to grid coordinate
+        point: which point of the cell to convert, can be 'center', 'top_left', 'top_right', 'bottom_left', 'bottom_right'
+        '''
+        grid_row = row * (self.cell_size[0] + self.wall_thickness) + 1
+        grid_col = col * (self.cell_size[1] + self.wall_thickness) + 1
+        if point == 'center':
+            grid_row += self.cell_size[0] // 2
+            grid_col += self.cell_size[1] // 2
+        elif point == 'top_left':
+            pass
+        elif point == 'top_right':
+            grid_col += self.cell_size[1] - 1
+        elif point == 'bottom_left':
+            grid_row += self.cell_size[0] - 1
+        elif point == 'bottom_right':
+            grid_row += self.cell_size[0] - 1
+            grid_col += self.cell_size[1] - 1
+        else:
+            raise ValueError(f"{point} is not a valid point type")
+
+        return grid_row, grid_col
+    
+    def coord2cell(self, grid_row: int, grid_col: int) -> Tuple[int, int]:
+        '''
+        Convert grid coordinate to cell index
+        '''
+        row = (grid_row - 1) // (self.cell_size[0] + self.wall_thickness)
+        col = (grid_col - 1) // (self.cell_size[1] + self.wall_thickness)
+        return row, col
+    
+    def is_wall(self, grid_row: int, grid_col: int, direction: Tuple[int, int]) -> bool:
+        '''
+        Check if there is a wall in the given direction from the given grid coordinate
+        direction: (1, 0) for south, (-1, 0) for north, (0, 1) for east, (0, -1) for west
+        '''
+        cell_row, cell_col = self.coord2cell(grid_row, grid_col)
+        if not (0 <= cell_row < self.n_row and 0 <= cell_col < self.n_col):
+            raise ValueError(f"Grid coordinate ({grid_row}, {grid_col}) is out of bounds")
+        grid_coord = self.cell2coord(cell_row, cell_col, point='top_left')
+        if direction == (1, 0):
+            return self.grid[grid_coord[0] + self.cell_size[0], grid_coord[1]] == 1
+        elif direction == (-1, 0):
+            return self.grid[grid_coord[0] - 1, grid_coord[1]] == 1
+        elif direction == (0, 1):
+            return self.grid[grid_coord[0], grid_coord[1] + self.cell_size[1]] == 1
+        elif direction == (0, -1):
+            return self.grid[grid_coord[0], grid_coord[1] - 1] == 1
+        else:
+            raise ValueError(f"{direction} is not a valid direction")
