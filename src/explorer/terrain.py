@@ -13,7 +13,6 @@ import trimesh
 def generate_from_grid_and_scale(env_grid: EnvironmentGrid, horizontal_scale: float, vertical_scale: float) -> Terrain:
     
     grid = np.array(env_grid.grid, dtype=int)
-    subterrain.height_field_raw = grid
 
     subterrain = SubTerrain(
         terrain_name="grid_terrain",
@@ -22,6 +21,7 @@ def generate_from_grid_and_scale(env_grid: EnvironmentGrid, horizontal_scale: fl
         vertical_scale=vertical_scale,
         horizontal_scale=horizontal_scale
     )
+    subterrain.height_field_raw[:] = grid
 
     terrain_cfg = TerrainTermCfg(
         func="holosoma.managers.terrain.terms.locomotion:TerrainLocomotion",
