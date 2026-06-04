@@ -25,7 +25,7 @@ def get_explorer_terrain_term_config(grid_shape: Tuple[int, int], horizontal_sca
         num_rows=1,
         num_cols=1,
         terrain_config = { # Unused
-            "flat": 0.0,
+            "flat": 1.0,
         }
     )
 
