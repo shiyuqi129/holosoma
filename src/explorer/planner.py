@@ -29,6 +29,10 @@ class BaseExplorerPlanner(ABC):
         '''
         pass
     
+    @abstractmethod
+    def reset(self):
+        pass
+    
 class ExplorerPlanner(BaseExplorerPlanner):
     def __init__(self, maze: MazeEnvironmentGrid, horizontal_scale: float, wall_height: float) -> None:
         super().__init__()
@@ -67,6 +71,9 @@ class ExplorerPlanner(BaseExplorerPlanner):
     @property
     def max_ang_vel(self) -> float:
         return 1.0 # Arbitrary choice
+    
+    def reset(self):
+        pass
 
     
 class KnownMapPlanner(ExplorerPlanner):
@@ -156,3 +163,8 @@ class KnownMapPlanner(ExplorerPlanner):
 
         return torch.cat([vx, vy, w])
 
+    def reset(self):
+        self.path_index = 0
+        self.target_cell = None
+        self.planned_path = None
+        self.planner_cooldown = 0
