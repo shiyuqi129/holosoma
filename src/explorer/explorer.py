@@ -3,6 +3,11 @@
 # The environment containes obstacle
 # The program will provide the model with velocity to guide it to explore the environment
 
+try:
+    import isaacgym
+except ImportError:
+    pass
+
 from environment import MazeEnvironmentGrid
 from planner import KnownMapPlanner
 

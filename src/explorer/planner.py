@@ -1,5 +1,6 @@
 # Motion Planning
 
+from __future__ import annotations
 
 from environment import MazeEnvironmentGrid
 
