@@ -145,10 +145,10 @@ class MazeEnvironmentGrid(EnvironmentGrid):
 
     @property
     def n_row(self):
-        return (self.size[0] - 2 + self.wall_thickness) // (self.cell_size[0] + self.wall_thickness)
+        return self.grid.shape[0]
     @property
     def n_col(self):
-        return (self.size[1] - 2 + self.wall_thickness) // (self.cell_size[1] + self.wall_thickness)
+        return self.grid.shape[1]
     
     def cell2coord(self, row: int, col: int, point = 'center')-> Tuple[int, int]:
         '''
@@ -188,8 +188,11 @@ class MazeEnvironmentGrid(EnvironmentGrid):
         direction: (1, 0) for south, (-1, 0) for north, (0, 1) for east, (0, -1) for west
         '''
         cell_row, cell_col = self.coord2cell(grid_row, grid_col)
+        return self.is_wall_cell_coord(cell_row, cell_col, direction)
+        
+    def is_wall_cell_coord(self, cell_row: int, cell_col: int, direction: Tuple[int, int]) -> bool:
         if not (0 <= cell_row < self.n_row and 0 <= cell_col < self.n_col):
-            raise ValueError(f"Grid coordinate ({grid_row}, {grid_col}) is out of bounds")
+            raise ValueError(f"Cell coordinate ({cell_row}, {cell_col}) is out of bounds")
         grid_coord = self.cell2coord(cell_row, cell_col, point='top_left')
         if direction == (1, 0):
             return self.grid[grid_coord[0] + self.cell_size[0], grid_coord[1]] == 1
@@ -201,3 +204,38 @@ class MazeEnvironmentGrid(EnvironmentGrid):
             return self.grid[grid_coord[0], grid_coord[1] - 1] == 1
         else:
             raise ValueError(f"{direction} is not a valid direction")
+
+    def path_find(self, start_cell_row, start_cell_col, end_cell_row, end_cell_col) -> List[Tuple[int, int]]:
+        '''
+        Find a path from start cell to end cell using BFS
+        '''
+        from collections import deque
+
+        queue = deque()
+        queue.append((start_cell_row, start_cell_col))
+        visited = set()
+        visited.add((start_cell_row, start_cell_col))
+        parent = dict()
+
+        while queue:
+            cell_row, cell_col = queue.popleft()
+            if (cell_row, cell_col) == (end_cell_row, end_cell_col):
+                break
+            
+            for dir in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+                if not self.is_wall_cell_coord(cell_row, cell_col, dir):
+                    neighbor_row = cell_row + dir[0]
+                    neighbor_col = cell_col + dir[1]
+                    if (neighbor_row, neighbor_col) not in visited and 0 <= neighbor_row < self.n_row and 0 <= neighbor_col < self.n_col:
+                        visited.add((neighbor_row, neighbor_col))
+                        parent[(neighbor_row, neighbor_col)] = (cell_row, cell_col)
+                        queue.append((neighbor_row, neighbor_col))
+
+        path = []
+        current = (end_cell_row, end_cell_col)
+        while current != (start_cell_row, start_cell_col):
+            path.append(current)
+            current = parent[current]
+        path.append((start_cell_row, start_cell_col))
+        path.reverse()
+        return path
