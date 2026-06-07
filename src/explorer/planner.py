@@ -140,12 +140,12 @@ class KnownMapPlanner(ExplorerPlanner):
 
         next_x, next_y = self.cell2world((next_row, next_col))
 
-        path_vector_norm = torch.tensor([next_row-last_row, next_col-last_col], dtype=torch.float)
-        target_vector = torch.tensor([next_x-current_x, next_y-current_y], dtype=torch.float)
+        path_vector_norm = torch.tensor([next_row-last_row, next_col-last_col], dtype=torch.float, device=self.device)
+        target_vector = torch.tensor([next_x-current_x, next_y-current_y], dtype=torch.float, device=self.device)
 
         heading_angle = calc_heading(observation['base_state'][3:7].unsqueeze(0)).squeeze()
-        heading_vector = torch.stack([torch.cos(heading_angle), torch.sin(heading_angle)], device=self.device)
-        heading_vector_perp = torch.stack([-torch.sin(heading_angle), torch.cos(heading_angle)], device=self.device)
+        heading_vector = torch.stack([torch.cos(heading_angle), torch.sin(heading_angle)])
+        heading_vector_perp = torch.stack([-torch.sin(heading_angle), torch.cos(heading_angle)])
 
         along = (target_vector @ path_vector_norm) * path_vector_norm
         cross = target_vector - along

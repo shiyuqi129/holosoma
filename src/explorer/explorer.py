@@ -39,6 +39,7 @@ class ExplorerConfig:
     headless_recording: bool = False
     log_dir: str = "logs"
     max_eval_steps: int | None = None
+    device: str = "cpu"
 
 
 def build_logger_config(
@@ -97,7 +98,7 @@ def main() -> None:
 
     maze = MazeEnvironmentGrid(maze_size, cell_size)
 
-    planner = KnownMapPlanner(maze, horizontal_scale, vertical_scale)
+    planner = KnownMapPlanner(maze, horizontal_scale, vertical_scale, args.device)
 
     height_field = maze.grid
     vertices, triangles = terrain_utils.convert_heightfield_to_trimesh(
@@ -132,6 +133,7 @@ def main() -> None:
             args.run_sim.training,
             headless=args.headless_recording or args.run_sim.training.headless,
         ),
+        device=args.device
     )
 
     config = dataclasses.replace(
