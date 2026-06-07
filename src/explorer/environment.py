@@ -144,11 +144,17 @@ class MazeEnvironmentGrid(EnvironmentGrid):
         self.r = r
 
     @property
-    def n_row(self):
+    def n_grid_row(self):
         return self.grid.shape[0]
     @property
-    def n_col(self):
+    def n_grid_col(self):
         return self.grid.shape[1]
+    @property
+    def n_cell_row(self):
+        return (self.n_grid_row - 2 + self.wall_thickness) // (self.cell_size[0] + self.wall_thickness)
+    @property
+    def n_cell_col(self):
+        return (self.n_grid_col - 2 + self.wall_thickness) // (self.cell_size[1] + self.wall_thickness)
     
     def cell2coord(self, row: int, col: int, point = 'center')-> Tuple[int, int]:
         '''
@@ -191,7 +197,7 @@ class MazeEnvironmentGrid(EnvironmentGrid):
         return self.is_wall_cell_coord(cell_row, cell_col, direction)
         
     def is_wall_cell_coord(self, cell_row: int, cell_col: int, direction: Tuple[int, int]) -> bool:
-        if not (0 <= cell_row < self.n_row and 0 <= cell_col < self.n_col):
+        if not (0 <= cell_row < self.n_cell_row and 0 <= cell_col < self.n_cell_col):
             raise ValueError(f"Cell coordinate ({cell_row}, {cell_col}) is out of bounds")
         grid_coord = self.cell2coord(cell_row, cell_col, point='top_left')
         if direction == (1, 0):
@@ -209,6 +215,11 @@ class MazeEnvironmentGrid(EnvironmentGrid):
         '''
         Find a path from start cell to end cell using BFS
         '''
+        if not (0 <= start_cell_row < self.n_cell_row and 0 <= start_cell_col < self.n_cell_col):
+            raise ValueError(f"Start cell coordinate ({start_cell_row}, {start_cell_col}) is out of bounds")
+        if not (0 <= end_cell_row < self.n_cell_row and 0 <= end_cell_col < self.n_cell_col):
+            raise ValueError(f"End cell coordinate ({end_cell_row}, {end_cell_col}) is out of bounds")
+
         from collections import deque
 
         queue = deque()

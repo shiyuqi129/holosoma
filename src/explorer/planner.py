@@ -108,7 +108,7 @@ class KnownMapPlanner(ExplorerPlanner):
         if self.target_cell == None:
             # Pick a random target
             while True:
-                row, col = random.randrange(0, self.maze.n_row), random.randrange(0, self.maze.n_col)
+                row, col = random.randrange(0, self.maze.n_cell_row), random.randrange(0, self.maze.n_cell_col)
                 if self.maze.grid[row][col] == 0 and (row, col) != (current_row, current_col):
                     self.target_cell = (row, col)
                     break
