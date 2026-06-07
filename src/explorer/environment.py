@@ -121,7 +121,7 @@ def Prim(size: Tuple[int, int], cell_size: Tuple[int, int], wall_thickness: int 
 
     _draw_rectangle(grid, n_row * (cell_size[0] + wall_thickness) - wall_thickness + 1, size[0], 0, size[1])
     _draw_rectangle(grid, 0 , size[0], n_col * (cell_size[1] + wall_thickness) - wall_thickness + 1, size[1])
-    return np.array(grid, dtype=int)
+    return np.array(grid, dtype=float)
 
 class EnvironmentGridGenerationMethod(Enum):
     PRIM = Prim

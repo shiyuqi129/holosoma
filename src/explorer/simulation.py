@@ -66,7 +66,6 @@ def run_simulation(config: RunSimConfig, planner: BaseExplorerPlanner):
 
         # Create and run direct simulation using context manager for automatic clean-up
         with DirectSimulation(config, env, device, simulation_app) as sim:
-            sim.initialize()
             planner.fps = config.simulator.config.sim.fps
 
             while True:
