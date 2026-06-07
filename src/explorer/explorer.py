@@ -121,6 +121,8 @@ def main() -> None:
             dynamic_friction=1.0,
             restitution=0.0,
             obj_file_path=str(mesh_path),
+            num_rows=1,
+            num_cols=1,
         )
     )
 
