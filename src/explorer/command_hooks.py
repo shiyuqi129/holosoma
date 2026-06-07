@@ -19,9 +19,11 @@ class ExplorerCommandHooks(CommandTermBase):
         if not isinstance(self.planner, BaseExplorerPlanner):
             raise TypeError("The planner parameter to ExplorerCommandHooks must be of type BaseExplorerPlanner")
         self.env = env
+        self.smoothing = 0.8 # Arbitrary choice
 
     def setup(self):
         self.commands = torch.zeros(self.env.num_envs, 3, dtype=torch.float32, device=self.env.device)
+        self.new_commands = torch.zeros(self.env.num_envs, 3, dtype=torch.float32, device=self.env.device)
         self.planner.fps = self.env.simulator.simulator_config.sim.fps
 
     def reset(self, env_ids):
@@ -31,5 +33,7 @@ class ExplorerCommandHooks(CommandTermBase):
         obs = extract_observation(self.env.simulator)
         commands = self.planner.plan_motion(obs)
         if commands is not None:
-            self.commands[0, :3] = commands
-            self.env.simulator.commands[0, :3]= commands
+            self.new_commands=self.commands
+        
+        self.commands[0, :3] = self.commands[0, :3] * self.smoothing + self.new_commands * (1-self.smoothing)
+        self.env.simulator.commands[0, :3]= self.commands[0, :3]

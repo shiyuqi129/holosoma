@@ -91,8 +91,8 @@ def build_logger_config(
 def main() -> None:
     args = tyro.cli(ExplorerConfig)
 
-    maze_size = (200, 200)
-    cell_size = (4, 4)
+    maze_size = (150, 150)
+    cell_size = (8, 8)
     horizontal_scale = 0.5
     vertical_scale = 0.05
     wall_height = 3
@@ -136,7 +136,7 @@ def main() -> None:
             args.run_sim.training,
             headless=args.headless_recording or args.run_sim.training.headless,
         ),
-        device=args.device
+        device=args.device,
     )
 
     config = dataclasses.replace(
@@ -161,7 +161,7 @@ def main() -> None:
     if args.model_path is not None:
         _run_checkpoint_simulation(config, planner, args.model_path, max_eval_steps=args.max_eval_steps)
     else:
-        planner = KnownMapPlanner(maze, horizontal_scale, vertical_scale)
+        planner = KnownMapPlanner(maze, horizontal_scale, vertical_scale, args.device)
         run_simulation(config, planner)
 
 if __name__ == "__main__":

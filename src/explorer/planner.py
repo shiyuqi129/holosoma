@@ -160,7 +160,9 @@ class KnownMapPlanner(ExplorerPlanner):
 
         angle_offset = torch.atan2(heading_vector[0]*desired_velocity[1]-heading_vector[1]*desired_velocity[0], heading_vector@desired_velocity)
 
-        w = torch.clamp(5 * angle_offset, -self.max_ang_vel, self.max_ang_vel)
+        w = torch.clamp(2 * angle_offset, -self.max_ang_vel, self.max_ang_vel)
+
+        self.planner_cooldown = self.fps / 20 if self.fps is not None else 1
 
         return torch.stack([vx, vy, w])
 

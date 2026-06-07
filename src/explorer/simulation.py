@@ -118,7 +118,17 @@ def _build_experiment_config_for_checkpoint(
                          "locomotion_command" : CommandTermCfg(func = "command_hooks:ExplorerCommandHooks")},
             step_terms={"locomotion_gait": CommandTermCfg(func="holosoma.managers.command.terms.locomotion:LocomotionGait"),
                         "locomotion_command" : CommandTermCfg(func = "command_hooks:ExplorerCommandHooks")},
-        )
+        ),
+        simulator=dataclasses.replace(
+            eval_config.simulator,
+            config=dataclasses.replace(
+                eval_config.simulator.config,
+                sim=dataclasses.replace(
+                    eval_config.simulator.config.sim,
+                    max_episode_length_s=60, # placeholder
+                ),
+            ),
+        ),
     )
 
     checkpoint_path = str(load_checkpoint(checkpoint, logger_config.base_dir))
