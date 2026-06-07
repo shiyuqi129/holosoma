@@ -111,10 +111,13 @@ def _build_experiment_config_for_checkpoint(
         logger=logger_config,
         training=eval_training,
         command=CommandManagerCfg(
-            setup_terms={"explorer" : CommandTermCfg(func = "command_hooks:ExplorerCommandHooks",
+            setup_terms={"locomotion_gait": CommandTermCfg(func="holosoma.managers.command.terms.locomotion:LocomotionGait"),
+                         "locomotion_command" : CommandTermCfg(func = "command_hooks:ExplorerCommandHooks",
                                                      params = {"planner": planner})},
-            reset_terms={"explorer" : CommandTermCfg(func = "command_hooks:ExplorerCommandHooks")},
-            step_terms={"explorer" : CommandTermCfg(func = "command_hooks:ExplorerCommandHooks")},
+            reset_terms={"locomotion_gait": CommandTermCfg(func="holosoma.managers.command.terms.locomotion:LocomotionGait"),
+                         "locomotion_command" : CommandTermCfg(func = "command_hooks:ExplorerCommandHooks")},
+            step_terms={"locomotion_gait": CommandTermCfg(func="holosoma.managers.command.terms.locomotion:LocomotionGait"),
+                        "locomotion_command" : CommandTermCfg(func = "command_hooks:ExplorerCommandHooks")},
         )
     )
 
