@@ -15,8 +15,9 @@ from abc import ABC, abstractmethod
 from holosoma.utils.rotations import calc_heading
 
 class BaseExplorerPlanner(ABC):
-    def __init__(self) -> None:
+    def __init__(self, device) -> None:
         self.fps: int | None = None
+        self.device = device
         pass
 
     @abstractmethod
@@ -34,8 +35,8 @@ class BaseExplorerPlanner(ABC):
         pass
     
 class ExplorerPlanner(BaseExplorerPlanner):
-    def __init__(self, maze: MazeEnvironmentGrid, horizontal_scale: float, wall_height: float) -> None:
-        super().__init__()
+    def __init__(self, maze: MazeEnvironmentGrid, horizontal_scale: float, wall_height: float, device) -> None:
+        super().__init__(device)
         self.maze = maze
         self.true_grid = maze.grid
         self.horizontal_scale = horizontal_scale
@@ -80,8 +81,8 @@ class KnownMapPlanner(ExplorerPlanner):
     '''
     With full knowledge of the layout
     '''
-    def __init__(self, maze: MazeEnvironmentGrid, horizontal_scale: float, wall_height: float) -> None:
-        super().__init__(maze, horizontal_scale, wall_height)
+    def __init__(self, maze: MazeEnvironmentGrid, horizontal_scale: float, wall_height: float, device) -> None:
+        super().__init__(maze, horizontal_scale, wall_height, device)
 
         self.target_cell = None
         self.planned_path = None
@@ -143,8 +144,8 @@ class KnownMapPlanner(ExplorerPlanner):
         target_vector = torch.tensor([next_x-current_x, next_y-current_y], dtype=torch.float)
 
         heading_angle = calc_heading(observation['base_state'][3:7].unsqueeze(0)).squeeze()
-        heading_vector = torch.cat([torch.cos(heading_angle), torch.sin(heading_angle)])
-        heading_vector_perp = torch.cat([-torch.sin(heading_angle), torch.cos(heading_angle)])
+        heading_vector = torch.stack([torch.cos(heading_angle), torch.sin(heading_angle)], device=self.device)
+        heading_vector_perp = torch.stack([-torch.sin(heading_angle), torch.cos(heading_angle)], device=self.device)
 
         along = (target_vector @ path_vector_norm) * path_vector_norm
         cross = target_vector - along
