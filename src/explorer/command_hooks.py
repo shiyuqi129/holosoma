@@ -3,7 +3,7 @@
 from planner import BaseExplorerPlanner
 from simulation import extract_observation
 
-import torch
+from holosoma.utils.safe_torch_import import torch
 
 from holosoma.envs.base_task.base_task import BaseTask
 from holosoma.managers.command.base import CommandTermBase

@@ -5,12 +5,6 @@ from __future__ import annotations
 # The environment containes obstacle
 # The program will provide the model with velocity to guide it to explore the environment
 
-try:
-    import isaacgym
-except ImportError:
-    pass
-
-
 from dataclasses import dataclass
 from pathlib import Path
 import dataclasses
@@ -96,8 +90,8 @@ def build_logger_config(
 def main() -> None:
     args = tyro.cli(ExplorerConfig)
 
-    maze_size = (1000, 1000)
-    cell_size = (10, 10)
+    maze_size = (100, 100)
+    cell_size = (2, 2)
     horizontal_scale = 0.1
     vertical_scale = 3.0
 

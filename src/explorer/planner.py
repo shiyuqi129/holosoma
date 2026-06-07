@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from environment import MazeEnvironmentGrid
 
-import torch
 import numpy as np
 import random
-import math
+
+from holosoma.utils.safe_torch_import import torch
 
 from typing import Tuple
 from abc import ABC, abstractmethod

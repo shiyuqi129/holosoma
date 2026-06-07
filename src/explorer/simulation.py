@@ -1,9 +1,10 @@
+from __future__ import annotations
+
 '''
 Manage simulation
 '''
 
 from planner import BaseExplorerPlanner
-from command_hooks import ExplorerCommandHooks
 
 import dataclasses
 import sys
