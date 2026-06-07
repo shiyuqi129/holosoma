@@ -31,5 +31,5 @@ class ExplorerCommandHooks(CommandTermBase):
         obs = extract_observation(self.env.simulator)
         commands = self.planner.plan_motion(obs)
         if commands is not None:
-            self.commands = commands
+            self.commands[0, :3] = commands
             self.env.simulator.commands[0, :3]= commands

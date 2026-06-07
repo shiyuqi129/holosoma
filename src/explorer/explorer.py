@@ -39,7 +39,7 @@ class ExplorerConfig:
     headless_recording: bool = False
     log_dir: str = "logs"
     max_eval_steps: int | None = None
-    device: str = "cpu"
+    device: str = "cuda"
 
 
 def build_logger_config(

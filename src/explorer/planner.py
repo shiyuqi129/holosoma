@@ -162,7 +162,7 @@ class KnownMapPlanner(ExplorerPlanner):
 
         w = torch.clamp(5 * angle_offset, -self.max_ang_vel, self.max_ang_vel)
 
-        return torch.cat([vx, vy, w])
+        return torch.stack([vx, vy, w])
 
     def reset(self):
         self.path_index = 0
