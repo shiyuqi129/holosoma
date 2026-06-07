@@ -153,7 +153,7 @@ class KnownMapPlanner(ExplorerPlanner):
         desired_velocity = along + cross * (1 + torch.linalg.norm(cross))
 
         if torch.linalg.norm(desired_velocity) > self.max_vel:
-            desired_velocity = torch.nn.functional.normalize(desired_velocity) * self.max_vel
+            desired_velocity = torch.nn.functional.normalize(desired_velocity, dim=-1) * self.max_vel
 
         vx = desired_velocity @ heading_vector
         vy = desired_velocity @ heading_vector_perp
