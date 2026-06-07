@@ -131,7 +131,7 @@ def _run_checkpoint_simulation(config: RunSimConfig, planner, checkpoint: str, m
         config.training.headless,
     )
 
-    env, device, simulation_app = setup_simulation_environment(eval_config, planner)
+    env, device, simulation_app = setup_simulation_environment(eval_config)
 
     try:
         algo_class = get_class(eval_config.algo._target_)
