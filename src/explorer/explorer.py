@@ -91,16 +91,19 @@ def build_logger_config(
 def main() -> None:
     args = tyro.cli(ExplorerConfig)
 
-    maze_size = (100, 100)
-    cell_size = (2, 2)
-    horizontal_scale = 0.1
-    vertical_scale = 3.0
+    maze_size = (200, 200)
+    cell_size = (4, 4)
+    horizontal_scale = 0.5
+    vertical_scale = 0.05
+    wall_height = 3
+    wall_thickness = 2
+    r = 0.1
 
-    maze = MazeEnvironmentGrid(maze_size, cell_size)
+    maze = MazeEnvironmentGrid(maze_size, cell_size, wall_thickness, r)
 
     planner = KnownMapPlanner(maze, horizontal_scale, vertical_scale, args.device)
 
-    height_field = maze.grid
+    height_field = maze.grid * wall_height / vertical_scale
     vertices, triangles = terrain_utils.convert_heightfield_to_trimesh(
         height_field, horizontal_scale, vertical_scale
     )
