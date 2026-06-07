@@ -5,14 +5,19 @@ from simulation import extract_observation
 
 import torch
 
-from holosoma.holosoma.envs.base_task.base_task import BaseTask
-from holosoma.holosoma.managers.command.base import CommandTermBase
+from holosoma.envs.base_task.base_task import BaseTask
+from holosoma.managers.command.base import CommandTermBase
+from holosoma.config_types.command import CommandTermCfg
 
 class ExplorerCommandHooks(CommandTermBase):
-    def __init__(self, planner: BaseExplorerPlanner, env: BaseTask):
+    def __init__(self, cfg: CommandTermCfg, env: BaseTask):
         if env.num_envs > 1:
             raise ValueError("Explorer only support one environment at a time")
-        self.planner = planner
+        self.planner: BaseExplorerPlanner = cfg.params.get("planner") # type: ignore
+        if self.planner is None:
+            raise ValueError("ExplorerCommandHooks requires a planner parameter.")
+        if not isinstance(self.planner, BaseExplorerPlanner):
+            raise TypeError("The planner parameter to ExplorerCommandHooks must be of type BaseExplorerPlanner")
         self.env = env
 
     def setup(self):
