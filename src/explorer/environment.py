@@ -237,7 +237,7 @@ class MazeEnvironmentGrid(EnvironmentGrid):
                 if not self.is_wall_cell_coord(cell_row, cell_col, dir):
                     neighbor_row = cell_row + dir[0]
                     neighbor_col = cell_col + dir[1]
-                    if (neighbor_row, neighbor_col) not in visited and 0 <= neighbor_row < self.n_row and 0 <= neighbor_col < self.n_col:
+                    if (neighbor_row, neighbor_col) not in visited and 0 <= neighbor_row < self.n_cell_row and 0 <= neighbor_col < self.n_cell_col:
                         visited.add((neighbor_row, neighbor_col))
                         parent[(neighbor_row, neighbor_col)] = (cell_row, cell_col)
                         queue.append((neighbor_row, neighbor_col))
