@@ -2,8 +2,8 @@
 
 from planner import BaseExplorerPlanner
 from simulation import extract_observation
-import torch
-#from holosoma.utils.safe_torch_import import torch
+
+from holosoma.utils.safe_torch_import import torch
 
 from holosoma.envs.base_task.base_task import BaseTask
 from holosoma.managers.command.base import CommandTermBase
@@ -27,13 +27,15 @@ class ExplorerCommandHooks(CommandTermBase):
         self.planner.fps = self.env.simulator.simulator_config.sim.fps
 
     def reset(self, env_ids):
+        self.commands = torch.zeros(self.env.num_envs, 3, dtype=torch.float32, device=self.env.device)
+        self.new_commands = torch.zeros(self.env.num_envs, 3, dtype=torch.float32, device=self.env.device)
         self.planner.reset()
 
     def step(self):
         obs = extract_observation(self.env.simulator)
         commands = self.planner.plan_motion(obs)
         if commands is not None:
-            self.new_commands=self.commands
+            self.new_commands = commands
         
         self.commands[0, :3] = self.commands[0, :3] * self.smoothing + self.new_commands * (1-self.smoothing)
         self.env.simulator.commands[0, :3]= self.commands[0, :3]
