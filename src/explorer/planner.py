@@ -157,7 +157,7 @@ class KnownMapPlanner(ExplorerPlanner):
                 self.planned_path = None
                 self.path_index = 0
                 self.planner_cooldown = self.fps if self.fps is not None else 20 # 1 second victory pause
-                return torch.zeros(3)
+                return torch.zeros(3, device=self.device)
             
         # Plan motion
         last_row, last_col = self.planned_path[self.path_index]
