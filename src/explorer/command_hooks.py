@@ -27,6 +27,8 @@ class ExplorerCommandHooks(CommandTermBase):
         self.planner.fps = self.env.simulator.simulator_config.sim.fps
 
     def reset(self, env_ids):
+        if len(env_ids) == 0:
+            return
         self.commands = torch.zeros(self.env.num_envs, 3, dtype=torch.float32, device=self.env.device)
         self.new_commands = torch.zeros(self.env.num_envs, 3, dtype=torch.float32, device=self.env.device)
         self.planner.reset()
