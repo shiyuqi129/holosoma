@@ -59,20 +59,37 @@ class ExplorerPlanner(BaseExplorerPlanner):
         grid_coord = self.get_current_grid_coord(pos)
         return self.maze.coord2cell(*grid_coord)
     
-    def grid2world(self, grid_coord: Tuple[int, int]) -> Tuple[float, float]:
-        return grid_coord[0] * self.horizontal_scale, grid_coord[1] * self.horizontal_scale
+    def grid2world(self, grid_coord: Tuple[int, int], point: str = 'center') -> Tuple[float, float]:
+        top = grid_coord[0] * self.horizontal_scale
+        bottom = grid_coord[0] * self.horizontal_scale + self.horizontal_scale
+        left = grid_coord[1] * self.horizontal_scale
+        right = grid_coord[1] * self.horizontal_scale + self.horizontal_scale
+        if point == 'top_right':
+            return top, right
+        if point == 'top_left':
+            return top, left
+        if point == 'bottom_right':
+            return bottom, right
+        if point == 'bottom_left':
+            return bottom, left
+        if point == 'center':
+            return (top+bottom)/2, (top+bottom)/2
     
     def cell2world(self, cell_coord: Tuple[int, int], point: str = 'center') -> Tuple[float, float]:
+        if point == 'center':
+            tl = self.cell2world(cell_coord, 'top_left')
+            br = self.cell2world(cell_coord, 'bottom_right')
+            return (tl[0]+br[0])/2, (tl[1]+br[1])/2
         grid_coord = self.maze.cell2coord(*cell_coord, point)
-        return self.grid2world(grid_coord)
+        return self.grid2world(grid_coord, point)
 
-    def is_in_cell(self, world_coord: Tuple[int, int], cell_coord: Tuple[int, int], buffer: float=0.2):
+    def is_in_cell(self, world_coord: Tuple[int, int], cell_coord: Tuple[int, int], buffer: float=0.3):
         top_left = self.cell2world(cell_coord, 'top_left')
         bottom_right = self.cell2world(cell_coord, 'bottom_right')
-        return top_left[0]+buffer<=world_coord[0] and \
-               top_left[1]+buffer<=world_coord[1] and \
-               bottom_right[0]-buffer>=world_coord[0] and \
-               bottom_right[1]-buffer>=world_coord[1]
+        return top_left[0]+buffer*self.horizontal_scale<=world_coord[0] and \
+               top_left[1]+buffer*self.horizontal_scale<=world_coord[1] and \
+               bottom_right[0]-buffer*self.horizontal_scale>=world_coord[0] and \
+               bottom_right[1]-buffer*self.horizontal_scale>=world_coord[1]
     
     @property
     def max_vel(self) -> float:
