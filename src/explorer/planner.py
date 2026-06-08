@@ -62,9 +62,17 @@ class ExplorerPlanner(BaseExplorerPlanner):
     def grid2world(self, grid_coord: Tuple[int, int]) -> Tuple[float, float]:
         return grid_coord[0] * self.horizontal_scale, grid_coord[1] * self.horizontal_scale
     
-    def cell2world(self, cell_coord: Tuple[int, int]) -> Tuple[float, float]:
-        grid_row, grid_col = self.maze.cell2coord(*cell_coord)
-        return self.grid2world((grid_row, grid_col))
+    def cell2world(self, cell_coord: Tuple[int, int], point: str = 'center') -> Tuple[float, float]:
+        grid_coord = self.maze.cell2coord(*cell_coord, point)
+        return self.grid2world(grid_coord)
+
+    def is_in_cell(self, world_coord: Tuple[int, int], cell_coord: Tuple[int, int], buffer: float=0.2):
+        top_left = self.cell2world(cell_coord, 'top_left')
+        bottom_right = self.cell2world(cell_coord, 'bottom_right')
+        return top_left[0]+buffer<=world_coord[0] and \
+               top_left[1]+buffer<=world_coord[1] and \
+               bottom_right[0]-buffer>=world_coord[0] and \
+               bottom_right[1]-buffer>=world_coord[1]
     
     @property
     def max_vel(self) -> float:
@@ -125,7 +133,7 @@ class KnownMapPlanner(ExplorerPlanner):
             self.planner_cooldown = 0
             return None
         
-        if (current_row, current_col) == self.planned_path[self.path_index+1]:
+        if self.is_in_cell((current_x, current_y), self.planned_path[self.path_index+1]):
             self.path_index+=1
             if self.path_index == len(self.planned_path)-1:
                 self.target_cell = None
