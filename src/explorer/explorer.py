@@ -161,8 +161,10 @@ def main() -> None:
     if args.model_path is not None:
         _run_checkpoint_simulation(config, planner, args.model_path, max_eval_steps=args.max_eval_steps)
     else:
-        planner = KnownMapPlanner(maze, horizontal_scale, vertical_scale, args.device)
-        run_simulation(config, planner)
+        raise NotImplementedError("Running without providing model checkpoint is not yet supported")
+        ## These uses some older code that is not well-tested
+        # planner = KnownMapPlanner(maze, horizontal_scale, vertical_scale, args.device)
+        # run_simulation(config, planner)
 
 if __name__ == "__main__":
     main()
